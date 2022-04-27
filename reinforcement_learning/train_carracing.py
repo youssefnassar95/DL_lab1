@@ -5,11 +5,9 @@ sys.path.append("../")
 
 import numpy as np
 import gym
-from agent.dqn_agent import DQNAgent
-from agent.networks import CNN
 from tensorboard_evaluation import *
-import itertools as it
-from utils import EpisodeStats
+from utils import EpisodeStats, rgb2gray
+from utils import *
 
 def run_episode(env, agent, deterministic, skip_frames=0,  do_training=True, rendering=False, max_timesteps=1000, history_length=0):
     """

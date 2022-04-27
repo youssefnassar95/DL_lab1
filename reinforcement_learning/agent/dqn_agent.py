@@ -1,5 +1,7 @@
 import numpy as np
-from dqn.replay_buffer import ReplayBuffer
+import torch
+import torch.optim as optim
+from agent.replay_buffer import ReplayBuffer
 
 
 def soft_update(target, source, tau):
