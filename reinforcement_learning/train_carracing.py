@@ -8,6 +8,8 @@ import gym
 from tensorboard_evaluation import *
 from utils import EpisodeStats, rgb2gray
 from utils import *
+from agent.dqn_agent import DQNAgent
+from agent.networks import CNN
 
 def run_episode(env, agent, deterministic, skip_frames=0,  do_training=True, rendering=False, max_timesteps=1000, history_length=0):
     """
