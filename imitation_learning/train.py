@@ -158,7 +158,7 @@ def train_model(X_train, y_train, X_valid, y_valid, n_minibatches, batch_size, l
         outputs, y_batch, loss = agent.update(X_batch, y_batch)
 
         _, predicted = torch.max(torch.abs(outputs).detach(), 1)
-        _, targetsbinary = torch.max(torch.abs(y_batch).detach(), 1)
+        _, targetsbinary = torch.max(torch.abs(y_batch).detach(), 1).to(device)
         n_correct = (predicted == targetsbinary).sum().item()
 
         n_iters+=1
