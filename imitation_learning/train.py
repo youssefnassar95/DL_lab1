@@ -178,8 +178,8 @@ def train_model(X_train, y_train, X_valid, y_valid, n_minibatches, batch_size, l
             print(f'batch accuracy: {(train_cor / (batch_size * n_iters))}')
 
     valid_cor = 0
-    y_valid = torch.tensor(np.array(y_valid))
-    outputs_valid = agent.predict(X_valid)
+    # y_valid = torch.tensor(np.array(y_valid))
+    # outputs_valid = agent.predict(X_valid)
     # _, predicted_valid = torch.max(torch.abs(outputs_valid).detach(), 1)
     # _, targetsbinary_valid = torch.max(torch.abs(y_valid).detach(), 1)
     # n_correct_valid = (predicted_valid == targetsbinary_valid).sum().item()
