@@ -1,7 +1,10 @@
 from __future__ import print_function
 
 import sys
-sys.path.append("../") 
+
+import torch
+
+sys.path.append("../")
 
 from datetime import datetime
 import numpy as np
@@ -11,6 +14,12 @@ import json
 
 from agent.bc_agent import BCAgent
 from utils import *
+
+LEFT =1
+RIGHT = 2
+STRAIGHT = 0
+ACCELERATE =3
+BRAKE = 4
 
 
 def run_episode(env, agent, rendering=True, max_timesteps=1000):
@@ -26,7 +35,7 @@ def run_episode(env, agent, rendering=True, max_timesteps=1000):
     while True:
         
         # TODO: preprocess the state in the same way than in your preprocessing in train_agent.py
-        #    state = ...
+        state_gray = rgb2gray(state)
 
         
         # TODO: get the action from your agent! You need to transform the discretized actions to continuous
@@ -36,7 +45,23 @@ def run_episode(env, agent, rendering=True, max_timesteps=1000):
         #       - just in case your agent misses the first turn because it is too fast: you are allowed to clip the acceleration in test_agent.py
         #       - you can use the softmax output to calculate the amount of lateral acceleration
         # a = ...
+        state_gray = torch.Tensor(state_gray).unsqueeze(0)
+        action = agent.predict(state_gray)
+        one_hot_encode = np.zeros((1,action.shape[1]))
+        max_index = torch.argmax(torch.abs(action))
+        one_hot_encode = np.insert(one_hot_encode, max_index, 1)
+        one_hot_encode = np.delete(one_hot_encode, max_index+1)
+        action_id = ""
+        if one_hot_encode[0] == 1.0:
+            action_id = STRAIGHT
+        elif one_hot_encode[1] == 1.0:
+            action_id = LEFT
+        elif one_hot_encode[2] == 1.0:
+            action_id = RIGHT
+        elif one_hot_encode[3] == 1.0:
+            action_id = ACCELERATE
 
+        a = id_to_action(action_id)
         next_state, r, done, info = env.step(a)   
         episode_reward += r       
         state = next_state
@@ -59,8 +84,8 @@ if __name__ == "__main__":
     n_test_episodes = 15                  # number of episodes to test
 
     # TODO: load agent
-    # agent = BCAgent(...)
-    # agent.load("models/bc_agent.pt")
+    agent = BCAgent()
+    agent.load("models/agent2.pt")
 
     env = gym.make('CarRacing-v0').unwrapped
 
