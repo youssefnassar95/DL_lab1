@@ -139,7 +139,7 @@ def train_model(X_train, y_train, X_valid, y_valid, n_minibatches, batch_size, l
 
     # TODO: specify your agent with the neural network in agents/bc_agent.py 
     agent = BCAgent(lr=lr)
-    # agent.to(device)
+    agent.to(device)
     
     tensorboard_eval = Evaluation(tensorboard_dir, 'evaluation')
 
