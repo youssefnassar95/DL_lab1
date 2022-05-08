@@ -157,17 +157,17 @@ def train_model(X_train, y_train, X_valid, y_valid, n_minibatches, batch_size, l
         X_batch, y_batch = sample_minibatch(X_train, y_train, batch_size)
         outputs, y_batch, loss = agent.update(X_batch, y_batch)
 
-        _, predicted = torch.max(torch.abs(outputs).detach(), 1)
-        predicted.to(device)
-        _, targetsbinary = torch.max(torch.abs(y_batch).detach(), 1)
-        targetsbinary.to(device)
-        n_correct = (predicted == targetsbinary).sum().item()
+#         _, predicted = torch.max(torch.abs(outputs).detach(), 1)
+#         predicted.to(device)
+#         _, targetsbinary = torch.max(torch.abs(y_batch).detach(), 1)
+#         targetsbinary.to(device)
+#         n_correct = (predicted == targetsbinary).sum().item()
 
-        n_iters+=1
-        train_cor += n_correct
+#         n_iters+=1
+#         train_cor += n_correct
         if i % 10 == 0:
             print(f'train batch loss for iter {i}: {loss.item()}')
-            print(f'batch accuracy: {(train_cor / (batch_size*n_iters))}')
+#             print(f'batch accuracy: {(train_cor / (batch_size*n_iters))}')
 
     valid_cor = 0
     y_valid = torch.tensor(np.array(y_valid))
