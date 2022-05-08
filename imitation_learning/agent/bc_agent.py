@@ -8,7 +8,7 @@ class BCAgent:
     
     def __init__(self, lr=1e-4):
         # TODO: Define network, loss function, optimizer
-        self.net = CNN()
+        self.net = CNN().cuda()
         self.optimizer = SGD(self.net.parameters(), lr=lr)
         self.criterion = torch.nn.CrossEntropyLoss()
         pass
