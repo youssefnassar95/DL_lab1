@@ -19,7 +19,7 @@ class BCAgent:
         y_batch = torch.tensor(y_batch, dtype=torch.float32).to(device)
         # TODO: forward + backward + optimize
         self.optimizer.zero_grad()
-        outputs = self.net.forward(X_batch)
+        outputs = self.net.forward(X_batch).to(device)
         loss = self.criterion(outputs, y_batch)
         loss.backward()
         self.optimizer.step()
