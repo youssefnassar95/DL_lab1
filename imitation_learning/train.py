@@ -155,7 +155,7 @@ def train_model(X_train, y_train, X_valid, y_valid, n_minibatches, batch_size, l
     # training loop
     for i in range(n_minibatches):
         X_batch, y_batch = sample_minibatch(X_train, y_train, batch_size)
-        outputs, y_batch, loss = agent.update(X_batch.to(device), y_batch.to(device))
+        outputs, y_batch, loss = agent.update(X_batch, y_batch)
 
         _, predicted = torch.max(torch.abs(outputs).detach(), 1)
         _, targetsbinary = torch.max(torch.abs(y_batch).detach(), 1)
