@@ -27,8 +27,10 @@ class CNN(nn.Module):
             # torch.nn.MaxPool2d(kernel_size=(2, 2), stride=(2, 2)),
             torch.nn.Conv2d(history_length, n_classes*8, kernel_size=3, stride=1),
             torch.nn.ReLU(),
+            torch.nn.MaxPool2d(kernel_size=(2, 2), stride=(2, 2)),
             torch.nn.Conv2d(n_classes * 8, n_classes * 8, kernel_size=3, stride=1),
             torch.nn.ReLU(),
+            torch.nn.MaxPool2d(kernel_size=(2, 2), stride=(2, 2)),
             torch.nn.Conv2d(n_classes * 8, n_classes * 8, kernel_size=3, stride=1),
             torch.nn.ReLU(),
             torch.nn.MaxPool2d(kernel_size=(2, 2), stride=(2, 2)),
@@ -38,7 +40,7 @@ class CNN(nn.Module):
         )
         self.linear_layers = nn.Sequential(
             # input from sequential conv layers
-            torch.nn.Linear(n_classes * 16 * 43 * 43, 128),
+            torch.nn.Linear(n_classes * 16 * 8 * 8, 128),
             torch.nn.ReLU(),
             torch.nn.Linear(128, n_classes),
         )
