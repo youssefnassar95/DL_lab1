@@ -122,8 +122,8 @@ def sample_minibatch(X, y, batch_size):
     y_batch_right = [y[2][i] for i in rand_list_right]
     X_batch_accelerate = [X[3][i] for i in rand_list_accelerate]
     y_batch_accelerate = [y[3][i] for i in rand_list_accelerate]
-    # X_batch_brake = [X[3][i] for i in rand_list_brake]
-    # y_batch_brake = [y[3][i] for i in rand_list_brake]
+    # X_batch_brake = [X[4][i] for i in rand_list_brake]
+    # y_batch_brake = [y[4][i] for i in rand_list_brake]
 
     X_batch_concatenate = np.concatenate((X_batch_straight, X_batch_left, X_batch_right, X_batch_accelerate))
     y_batch_concatenate = np.concatenate((y_batch_straight, y_batch_left, y_batch_right, y_batch_accelerate))
@@ -178,8 +178,8 @@ def train_model(X_train, y_train, X_valid, y_valid, n_minibatches, batch_size, l
             print(f'batch accuracy: {(train_cor / (batch_size * n_iters))}')
 
     valid_cor = 0
-#     y_valid = torch.tensor(np.array(y_valid))
-#     outputs_valid = agent.predict(X_valid)
+    y_valid = torch.tensor(np.array(y_valid))
+    outputs_valid = agent.predict(X_valid)
     # _, predicted_valid = torch.max(torch.abs(outputs_valid).detach(), 1)
     # _, targetsbinary_valid = torch.max(torch.abs(y_valid).detach(), 1)
     # n_correct_valid = (predicted_valid == targetsbinary_valid).sum().item()
@@ -202,5 +202,5 @@ if __name__ == "__main__":
     X_train, y_train, X_valid, y_valid = preprocessing(X_train, y_train, X_valid, y_valid, history_length=1)
 
     # train model (you can change the parameters!)
-    train_model(X_train, y_train, X_valid, y_valid, n_minibatches=1000, batch_size=64, lr=1e-4)
+    train_model(X_train, y_train, X_valid, y_valid, n_minibatches=1000, batch_size=64, lr=1e-3)
 
