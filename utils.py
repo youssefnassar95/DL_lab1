@@ -11,7 +11,7 @@ def rgb2gray(rgb):
     """ 
     this method converts rgb images to grayscale.
     """
-    gray = np.dot(rgb[...,:3], [0.2125, 0.7154, 0.0721])
+    gray = np.dot(rgb[...,:1], [0.2125, 0.7154, 0.0721])
     return gray.astype('float32') 
 
 
