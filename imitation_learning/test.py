@@ -85,7 +85,8 @@ if __name__ == "__main__":
 
     # TODO: load agent
     agent = BCAgent()
-    agent.load("models/agent3.pt")
+    agent.load("models/agent1.pt")
+    x=0
 
     env = gym.make('CarRacing-v0').unwrapped
 
