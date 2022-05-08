@@ -15,12 +15,13 @@ class BCAgent:
 
     def update(self, X_batch, y_batch):
         # TODO: transform input to tensors
-        X_batch = torch.tensor(X_batch, dtype=torch.float32).to(device)
-        y_batch = torch.tensor(y_batch, dtype=torch.float32).to(device)
+        X_batch = torch.tensor(X_batch, dtype=torch.float32)
+        y_batch = torch.tensor(y_batch, dtype=torch.float32)
         # TODO: forward + backward + optimize
         self.optimizer.zero_grad()
-        outputs = self.net.forward(X_batch).to(device)
-        loss = self.criterion(outputs, y_batch)
+        outputs = self.net.forward(X_batch.to(device))
+        outputs.to(device)
+        loss = self.criterion(outputs, y_batch.to(device))
         loss.backward()
         self.optimizer.step()
 
