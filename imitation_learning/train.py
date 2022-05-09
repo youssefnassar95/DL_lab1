@@ -169,9 +169,9 @@ def train_model(X_train, y_train, X_valid, y_valid, n_minibatches, batch_size, l
 
         if i % 10 == 0:
             _, predicted_train = torch.max(torch.abs(outputs).detach(), 1)
-            predicted_train.to(device)
+            # predicted_train.to(device)
             _, targetsbinary_train = torch.max(torch.abs(y_batch).detach(), 1)
-            targetsbinary_train.to(device)
+            # targetsbinary_train.to(device)
             n_correct = (predicted_train == targetsbinary_train).sum().item()
             train_acc = n_correct * 100.0 / batch_size
             # train_acc = train_acc.item()
