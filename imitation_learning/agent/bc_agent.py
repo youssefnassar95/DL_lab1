@@ -34,7 +34,6 @@ class BCAgent:
         # with torch.no_grad():
         # X = torch.from_numpy(X).to(device).unsqueeze(1)
         # X = sourceTensor.clone(X).detach()
-        X = np.array(X)
         X = torch.tensor(X, dtype=torch.float32).unsqueeze(1)
         outputs = self.net.forward(X)
         return outputs
