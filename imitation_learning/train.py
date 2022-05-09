@@ -192,8 +192,8 @@ def train_model(X_train, y_train, X_valid, y_valid, n_minibatches, batch_size, l
             # _, targetsbinary_train = torch.max(torch.abs(y_batch).detach(), 1)
             # n_correct = (predicted_train == targetsbinary_train).sum().item()
             # train_acc = n_correct * 100.0 / batch_size
-            preds_train = torch.argmax(agent.predict(X_batch).to(device).detach(), dim=-1)
-            target_train = torch.argmax(y_batch.to(device), dim=-1)
+            preds_train = torch.argmax(agent.predict(X_batch).detach(), dim=-1)
+            target_train = torch.argmax(y_batch, dim=-1)
             train_acc = torch.sum(preds_train == target_train) * 100.0 / batch_size
             train_acc = train_acc.item()
             print(f'train batch loss for iter {i}: {loss.item()}')
