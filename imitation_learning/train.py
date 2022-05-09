@@ -192,16 +192,16 @@ def train_model(X_train, y_train, X_valid, y_valid, n_minibatches, batch_size, l
             print(f'train batch loss for iter {i}: {loss.item()}')
             print(f'batch accuracy: {train_acc} %')
 
-            rand_valid = np.random.randint(0, len(y_valid), batch_size)
-            X_valid = X_valid[rand_valid]
-            y_valid = y_valid[rand_valid]
+            # rand_valid = np.random.randint(0, len(y_valid), batch_size)
+            # X_valid = X_valid[rand_valid]
+            # y_valid = y_valid[rand_valid]
             y_valid = torch.tensor(y_valid)
 
 
             preds_valid = agent.predict(X_valid)
             target_valid = torch.argmax(torch.abs(preds_valid), dim=-1)
             valid_acc = torch.sum(target_valid == y_valid)
-            valid_acc = valid_acc * 100 / batch_size
+            valid_acc = valid_acc * 100 / len(y_valid)
             valid_acc = valid_acc.item()
             print(f'valid accuracy: {valid_acc} %')
 
