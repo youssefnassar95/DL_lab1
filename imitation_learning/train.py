@@ -26,7 +26,7 @@ def read_data(datasets_dir="./data", frac=0.1):
     and splits it into training/ validation set.
     """
     print("... read data")
-    data_file = os.path.join(datasets_dir, 'data.pkl.gzip')
+    data_file = os.path.join(datasets_dir, 'data-h.pkl.gzip')
 
     f = gzip.open(data_file, 'rb')
     data = pickle.load(f)
@@ -66,37 +66,40 @@ def preprocessing(X_train, y_train, X_valid, y_valid, history_length=1):
     y_valid = list(map(action_to_id, y_valid))
 
     y_train = one_hot_encoding(y_train, 4)
-    y_train_straight = []
-    X_train_straight = []
-    y_train_left = []
-    X_train_left = []
-    y_train_right = []
-    X_train_right = []
-    y_train_accelerate = []
-    X_train_accelerate = []
-    # y_train_brake = []
-    # X_train_brake = []
 
-
-    for i in range(len(y_train)):
-        if np.array_equiv(y_train[i], [1, 0, 0, 0]):
-            y_train_straight.append(y_train[i])
-            X_train_straight.append(X_train[i])
-        if np.array_equiv(y_train[i], [0, 1, 0, 0]):
-            y_train_left.append(y_train[i])
-            X_train_left.append(X_train[i])
-        if np.array_equiv(y_train[i], [0, 0, 1, 0]):
-            y_train_right.append(y_train[i])
-            X_train_right.append(X_train[i])
-        if np.array_equiv(y_train[i], [0, 0, 0, 1]):
-            y_train_accelerate.append(y_train[i])
-            X_train_accelerate.append(X_train[i])
-        # if np.array_equiv(y_train[i], [0, 0, 0, 0, 1]):
-        #     y_train_brake.append(y_train[i])
-        #     X_train_brake.append(X_train[i])
-
-    X_train = [X_train_straight, X_train_left, X_train_right, X_train_accelerate]
-    y_train = [y_train_straight, y_train_left, y_train_right, y_train_accelerate]
+    # .......
+    # y_train_straight = []
+    # X_train_straight = []
+    # y_train_left = []
+    # X_train_left = []
+    # y_train_right = []
+    # X_train_right = []
+    # y_train_accelerate = []
+    # X_train_accelerate = []
+    # # y_train_brake = []
+    # # X_train_brake = []
+    #
+    #
+    # for i in range(len(y_train)):
+    #     if np.array_equiv(y_train[i], [1, 0, 0, 0]):
+    #         y_train_straight.append(y_train[i])
+    #         X_train_straight.append(X_train[i])
+    #     if np.array_equiv(y_train[i], [0, 1, 0, 0]):
+    #         y_train_left.append(y_train[i])
+    #         X_train_left.append(X_train[i])
+    #     if np.array_equiv(y_train[i], [0, 0, 1, 0]):
+    #         y_train_right.append(y_train[i])
+    #         X_train_right.append(X_train[i])
+    #     if np.array_equiv(y_train[i], [0, 0, 0, 1]):
+    #         y_train_accelerate.append(y_train[i])
+    #         X_train_accelerate.append(X_train[i])
+    #     # if np.array_equiv(y_train[i], [0, 0, 0, 0, 1]):
+    #     #     y_train_brake.append(y_train[i])
+    #     #     X_train_brake.append(X_train[i])
+    #
+    # X_train = [X_train_straight, X_train_left, X_train_right, X_train_accelerate]
+    # y_train = [y_train_straight, y_train_left, y_train_right, y_train_accelerate]
+    # ........
 
     # History:
     # At first you should only use the current image as input to your network to learn the next action. Then the input states
@@ -105,14 +108,13 @@ def preprocessing(X_train, y_train, X_valid, y_valid, history_length=1):
     return X_train, y_train, X_valid, y_valid
 
 
-def sample_minibatch(X, y, batch_size):
+def sample_uniform_minibatch(X, y, batch_size):
     small_batch = int(batch_size / 4)
     rand_list_straight = np.random.randint(0, high=len(X[0]), size=small_batch)
     rand_list_left = np.random.randint(0, high=len(X[1]), size=small_batch)
     rand_list_right = np.random.randint(0, high=len(X[2]), size=small_batch)
     rand_list_accelerate = np.random.randint(0, high=len(X[3]), size=small_batch)
-    # rand_list_brake = np.random.randint(0, high=len(X[4]), size=small_batch)
-    # rand_indeces = np.concatenate((rand_list_straight, rand_list_left, rand_list_right, rand_list_accelerate), axis=0)
+
 
     X_batch_straight = [X[0][i] for i in rand_list_straight]
     y_batch_straight = [y[0][i] for i in rand_list_straight]
@@ -139,6 +141,19 @@ def sample_minibatch(X, y, batch_size):
     y_batch = np.array(y_batch)
     return X_batch, y_batch
 
+def sample_minibatch(X, y, batch_size):
+    rand_list = np.random.randint(0, high=len(y), size=batch_size)
+
+    X_batch = X[rand_list]
+    y_batch = y[rand_list]
+
+    X_batch = np.array(X_batch)
+    y_batch = np.array(y_batch)
+    # X_batch = torch.tensor(X_batch)
+    # X_batch, y_batch = torch.from_numpy(X_batch).to(device), torch.from_numpy(y_batch).to(device)
+
+    return X_batch, y_batch
+
 
 def train_model(X_train, y_train, X_valid, y_valid, n_minibatches, batch_size, lr, model_dir="./models",
                 tensorboard_dir="./tensorboard"):
@@ -147,8 +162,13 @@ def train_model(X_train, y_train, X_valid, y_valid, n_minibatches, batch_size, l
         os.mkdir(model_dir)
 
     print("... train model")
+    X_train = np.array(X_train)
+    y_train = np.array(y_train)
+    # X_train, y_train = torch.from_numpy(X_train).to(device), torch.from_numpy(y_train).to(device)
+
 
     X_valid = np.array(X_valid)
+    X_valid = np.expand_dims(X_valid, axis=1)
     y_valid = np.array(y_valid)
 
     X_valid, y_valid = torch.from_numpy(X_valid).to(device), torch.from_numpy(y_valid).to(device)
@@ -168,35 +188,29 @@ def train_model(X_train, y_train, X_valid, y_valid, n_minibatches, batch_size, l
         outputs, y_batch, loss = agent.update(X_batch, y_batch)
 
         if i % 10 == 0:
-            _, predicted_train = torch.max(torch.abs(outputs).detach(), 1)
-            # predicted_train.to(device)
-            _, targetsbinary_train = torch.max(torch.abs(y_batch).detach(), 1)
-            # targetsbinary_train.to(device)
-            n_correct = (predicted_train == targetsbinary_train).sum().item()
-            train_acc = n_correct * 100.0 / batch_size
-            # train_acc = train_acc.item()
+            # _, predicted_train = torch.max(torch.abs(outputs).detach(), 1)
+            # _, targetsbinary_train = torch.max(torch.abs(y_batch).detach(), 1)
+            # n_correct = (predicted_train == targetsbinary_train).sum().item()
+            # train_acc = n_correct * 100.0 / batch_size
+            preds_train = torch.argmax(agent.predict(X_batch).to(device).detach(), dim=-1)
+            target_train = torch.argmax(y_batch.to(device), dim=-1)
+            train_acc = torch.sum(preds_train == target_train) * 100.0 / batch_size
+            train_acc = train_acc.item()
             print(f'train batch loss for iter {i}: {loss.item()}')
             print(f'batch accuracy: {train_acc} %')
 
             rand_valid = np.random.randint(0, len(y_valid), batch_size)
             X_valid = X_valid[rand_valid]
             y_valid = y_valid[rand_valid]
+            # y_valid = np.expand_dims(y_valid, axis=1)
+            y_valid = torch.tensor(y_valid)
 
-            # X_valid, y_valid = torch.from_numpy(X_valid).to(device), torch.from_numpy(y_valid).to(device)
 
-            preds = agent.predict(X_valid.to(device))
-            valid_acc = torch.sum(torch.argmax(preds, dim=-1) == y_valid) * 100.0 / batch_size
+            preds_valid = agent.predict(X_valid)
+            target_valid = torch.argmax(torch.abs(preds_valid), dim=-1)
+            valid_acc = torch.sum(target_valid == y_valid)
+            valid_acc = valid_acc * 100 / batch_size
             valid_acc = valid_acc.item()
-            # X_valid = torch.tensor(X_valid, dtype=torch.float32).to(device)
-            # y_valid = torch.tensor(y_valid, dtype=torch.float32).to(device)
-            #
-            # predicted_valid = torch.argmax(torch.abs(agent.predict(X_valid)).detach(), 0)
-            # # predicted_valid.to(device)
-            # targetsbinary_valid = torch.argmax(torch.abs(y_valid).detach(), 0)
-            # # targetsbinary.to(device)
-            # n_correct = (predicted_valid == targetsbinary_valid).sum().item()
-            # valid_acc = n_correct * 100.0 / batch_size
-            # valid_acc = train_acc.item()
             print(f'valid accuracy: {valid_acc} %')
 
             eval = {"train_acc": train_acc, "valid_acc": valid_acc, "loss": loss}
@@ -204,7 +218,7 @@ def train_model(X_train, y_train, X_valid, y_valid, n_minibatches, batch_size, l
     print("finished")
 
     # TODO: save your agent
-    model_dir = agent.save(os.path.join(model_dir, "agent4.pt"))
+    model_dir = agent.save(os.path.join(model_dir, "agent1.pt"))
     print("Model saved in file: %s" % model_dir)
 
 
@@ -216,5 +230,5 @@ if __name__ == "__main__":
     X_train, y_train, X_valid, y_valid = preprocessing(X_train, y_train, X_valid, y_valid, history_length=1)
 
     # train model (you can change the parameters!)
-    train_model(X_train, y_train, X_valid, y_valid, n_minibatches=1000, batch_size=64, lr=1e-4)
+    train_model(X_train, y_train, X_valid, y_valid, n_minibatches=1000, batch_size=64, lr=1e-3)
 
