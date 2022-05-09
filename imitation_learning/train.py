@@ -148,42 +148,59 @@ def train_model(X_train, y_train, X_valid, y_valid, n_minibatches, batch_size, l
 
     print("... train model")
 
+    X_valid = np.array(X_valid)
+    y_valid = np.array(y_valid)
+
+    X_valid, y_valid = torch.from_numpy(X_valid).to(device), torch.from_numpy(y_valid).to(device)
+
     # TODO: specify your agent with the neural network in agents/bc_agent.py
     agent = BCAgent(lr=lr)
-    tensorboard_eval = Evaluation(tensorboard_dir, 'evaluation')
-
+    tensorboard_eval = Evaluation(tensorboard_dir, "CNN-4", stats=["train_acc", "valid_acc", "loss"])
     # TODO: implement the training
     #
     # 1. write a method sample_minibatch and perform an update step
     # 2. compute training/ validation accuracy and loss for the batch and visualize them with tensorboard. You can watch the progress of
     #    your training *during* the training in your web browser
-    train_cor = 0
-    n_iters = 0
-
     # training loop
     for i in range(n_minibatches):
+
         X_batch, y_batch = sample_minibatch(X_train, y_train, batch_size)
         outputs, y_batch, loss = agent.update(X_batch, y_batch)
 
-        _, predicted = torch.max(torch.abs(outputs).detach(), 1)
-        predicted.to(device)
-        _, targetsbinary = torch.max(torch.abs(y_batch).detach(), 1)
-        targetsbinary.to(device)
-        n_correct = (predicted == targetsbinary).sum().item()
-
-        n_iters += 1
-        train_cor += n_correct
         if i % 10 == 0:
+            _, predicted_train = torch.max(torch.abs(outputs).detach(), 1)
+            predicted_train.to(device)
+            _, targetsbinary_train = torch.max(torch.abs(y_batch).detach(), 1)
+            targetsbinary_train.to(device)
+            n_correct = (predicted_train == targetsbinary_train).sum().item()
+            train_acc = n_correct * 100.0 / batch_size
+            # train_acc = train_acc.item()
             print(f'train batch loss for iter {i}: {loss.item()}')
-            print(f'batch accuracy: {(train_cor / (batch_size * n_iters))}')
+            print(f'batch accuracy: {train_acc} %')
 
-    valid_cor = 0
-    # y_valid = torch.tensor(np.array(y_valid))
-    # outputs_valid = agent.predict(X_valid)
-    # _, predicted_valid = torch.max(torch.abs(outputs_valid).detach(), 1)
-    # _, targetsbinary_valid = torch.max(torch.abs(y_valid).detach(), 1)
-    # n_correct_valid = (predicted_valid == targetsbinary_valid).sum().item()
-    # print(f'valid accuracy: {(n_correct_valid / len(y_valid))}')
+            rand_valid = np.random.randint(0, len(y_valid), batch_size)
+            X_valid = X_valid[rand_valid]
+            y_valid = y_valid[rand_valid]
+
+            # X_valid, y_valid = torch.from_numpy(X_valid).to(device), torch.from_numpy(y_valid).to(device)
+
+            preds = agent.predict(X_valid.to(device))
+            valid_acc = torch.sum(torch.argmax(preds, dim=-1) == y_valid) * 100.0 / batch_size
+            valid_acc = valid_acc.item()
+            # X_valid = torch.tensor(X_valid, dtype=torch.float32).to(device)
+            # y_valid = torch.tensor(y_valid, dtype=torch.float32).to(device)
+            #
+            # predicted_valid = torch.argmax(torch.abs(agent.predict(X_valid)).detach(), 0)
+            # # predicted_valid.to(device)
+            # targetsbinary_valid = torch.argmax(torch.abs(y_valid).detach(), 0)
+            # # targetsbinary.to(device)
+            # n_correct = (predicted_valid == targetsbinary_valid).sum().item()
+            # valid_acc = n_correct * 100.0 / batch_size
+            # valid_acc = train_acc.item()
+            print(f'valid accuracy: {valid_acc} %')
+
+            eval = {"train_acc": train_acc, "valid_acc": valid_acc, "loss": loss}
+            tensorboard_eval.write_episode_data(i, eval)
     print("finished")
 
 
@@ -202,5 +219,5 @@ if __name__ == "__main__":
     X_train, y_train, X_valid, y_valid = preprocessing(X_train, y_train, X_valid, y_valid, history_length=1)
 
     # train model (you can change the parameters!)
-    train_model(X_train, y_train, X_valid, y_valid, n_minibatches=1000, batch_size=64, lr=1e-3)
+    train_model(X_train, y_train, X_valid, y_valid, n_minibatches=1000, batch_size=64, lr=1e-4)
 
