@@ -27,17 +27,13 @@ class CNN(nn.Module):
             # torch.nn.MaxPool2d(kernel_size=(2, 2), stride=(2, 2)),
             torch.nn.Conv2d(n_classes*32, n_classes * 32, kernel_size=3, stride=2),
             torch.nn.ReLU(),
-            torch.nn.Conv2d(n_classes * 32, n_classes * 64, kernel_size=3, stride=2),
-            torch.nn.ReLU(),
-            torch.nn.Conv2d(n_classes * 64, n_classes * 64, kernel_size=3, stride=2),
-            torch.nn.ReLU(),
-
+            torch.nn.MaxPool2d(kernel_size=(2, 2), stride=(2, 2)),
         )
         self.linear_layers = nn.Sequential(
             # input from sequential conv layers
-            torch.nn.Linear(64 * n_classes * 1 * 1, 256),
-            torch.nn.ReLU(),
-            torch.nn.Linear(256, n_classes),
+            torch.nn.Linear(32 * n_classes * 5 * 5, n_classes),
+            # torch.nn.ReLU(),
+            # torch.nn.Linear(256, n_classes),
         )
 
     def forward(self, x):
