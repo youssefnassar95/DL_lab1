@@ -203,11 +203,8 @@ def train_model(X_train, y_train, X_valid, y_valid, n_minibatches, batch_size, l
             tensorboard_eval.write_episode_data(i, eval)
     print("finished")
 
-
-    pass
-
     # TODO: save your agent
-    model_dir = agent.save(os.path.join(model_dir, "agent3.pt"))
+    model_dir = agent.save(os.path.join(model_dir, "agent4.pt"))
     print("Model saved in file: %s" % model_dir)
 
 
