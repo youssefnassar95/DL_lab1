@@ -194,7 +194,8 @@ def train_model(X_train, y_train, X_valid, y_valid, n_minibatches, batch_size, l
 
             rand_valid = np.random.randint(0, len(y_valid), batch_size)
             X_valid = X_valid[rand_valid]
-            y_valid = torch.tensor(y_valid[rand_valid])
+            y_valid = y_valid[rand_valid]
+            y_valid = torch.tensor(y_valid)
 
 
             preds_valid = agent.predict(X_valid)
