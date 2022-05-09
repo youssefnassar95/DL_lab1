@@ -26,7 +26,7 @@ def read_data(datasets_dir="./data", frac=0.1):
     and splits it into training/ validation set.
     """
     print("... read data")
-    data_file = os.path.join(datasets_dir, 'data-h.pkl.gzip')
+    data_file = os.path.join(datasets_dir, 'data.pkl.gzip')
 
     f = gzip.open(data_file, 'rb')
     data = pickle.load(f)
@@ -67,6 +67,7 @@ def preprocessing(X_train, y_train, X_valid, y_valid, history_length=1):
 
     y_train = one_hot_encoding(y_train, 4)
 
+    # preprocessing part for uniform sampling
     # .......
     # y_train_straight = []
     # X_train_straight = []
@@ -101,6 +102,7 @@ def preprocessing(X_train, y_train, X_valid, y_valid, history_length=1):
     # y_train = [y_train_straight, y_train_left, y_train_right, y_train_accelerate]
     # ........
 
+
     # History:
     # At first you should only use the current image as input to your network to learn the next action. Then the input states
     # have shape (96, 96, 1). Later, add a history of the last N images to your state so that a state has shape (96, 96, N).
@@ -124,8 +126,7 @@ def sample_uniform_minibatch(X, y, batch_size):
     y_batch_right = [y[2][i] for i in rand_list_right]
     X_batch_accelerate = [X[3][i] for i in rand_list_accelerate]
     y_batch_accelerate = [y[3][i] for i in rand_list_accelerate]
-    # X_batch_brake = [X[4][i] for i in rand_list_brake]
-    # y_batch_brake = [y[4][i] for i in rand_list_brake]
+
 
     X_batch_concatenate = np.concatenate((X_batch_straight, X_batch_left, X_batch_right, X_batch_accelerate))
     y_batch_concatenate = np.concatenate((y_batch_straight, y_batch_left, y_batch_right, y_batch_accelerate))
@@ -149,8 +150,6 @@ def sample_minibatch(X, y, batch_size):
 
     X_batch = np.array(X_batch)
     y_batch = np.array(y_batch)
-    # X_batch = torch.tensor(X_batch)
-    # X_batch, y_batch = torch.from_numpy(X_batch).to(device), torch.from_numpy(y_batch).to(device)
 
     return X_batch, y_batch
 
@@ -164,8 +163,6 @@ def train_model(X_train, y_train, X_valid, y_valid, n_minibatches, batch_size, l
     print("... train model")
     X_train = np.array(X_train)
     y_train = np.array(y_train)
-    # X_train, y_train = torch.from_numpy(X_train).to(device), torch.from_numpy(y_train).to(device)
-
 
     X_valid = np.array(X_valid)
     X_valid = np.expand_dims(X_valid, axis=1)
@@ -175,7 +172,7 @@ def train_model(X_train, y_train, X_valid, y_valid, n_minibatches, batch_size, l
 
     # TODO: specify your agent with the neural network in agents/bc_agent.py
     agent = BCAgent(lr=lr)
-    tensorboard_eval = Evaluation(tensorboard_dir, "CNN-4", stats=["train_acc", "valid_acc", "loss"])
+    tensorboard_eval = Evaluation(tensorboard_dir, "trani-1", stats=["train_acc", "valid_acc", "loss"])
     # TODO: implement the training
     #
     # 1. write a method sample_minibatch and perform an update step
@@ -188,10 +185,6 @@ def train_model(X_train, y_train, X_valid, y_valid, n_minibatches, batch_size, l
         outputs, y_batch, loss = agent.update(X_batch, y_batch)
 
         if i % 10 == 0:
-            # _, predicted_train = torch.max(torch.abs(outputs).detach(), 1)
-            # _, targetsbinary_train = torch.max(torch.abs(y_batch).detach(), 1)
-            # n_correct = (predicted_train == targetsbinary_train).sum().item()
-            # train_acc = n_correct * 100.0 / batch_size
             preds_train = torch.argmax(agent.predict(X_batch).detach(), dim=-1)
             target_train = torch.argmax(y_batch, dim=-1)
             train_acc = torch.sum(preds_train == target_train) * 100.0 / batch_size
@@ -201,9 +194,7 @@ def train_model(X_train, y_train, X_valid, y_valid, n_minibatches, batch_size, l
 
             rand_valid = np.random.randint(0, len(y_valid), batch_size)
             X_valid = X_valid[rand_valid]
-            y_valid = y_valid[rand_valid]
-            # y_valid = np.expand_dims(y_valid, axis=1)
-            y_valid = torch.tensor(y_valid)
+            y_valid = torch.tensor(y_valid[rand_valid])
 
 
             preds_valid = agent.predict(X_valid)
