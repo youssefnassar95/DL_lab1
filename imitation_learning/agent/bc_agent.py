@@ -32,7 +32,7 @@ class BCAgent:
     def predict(self, X):
         # TODO: forward pass
         # with torch.no_grad():
-        X = torch.tensor(X, dtype=torch.float32).to(device)
+        X = torch.tensor(X, dtype=torch.float32).detach().to(device)
         outputs = self.net.forward(X)
         return outputs
 
