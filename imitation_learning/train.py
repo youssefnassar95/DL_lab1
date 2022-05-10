@@ -69,37 +69,37 @@ def preprocessing(X_train, y_train, X_valid, y_valid, history_length=1):
 
     # preprocessing part for uniform sampling
     # .......
-    # y_train_straight = []
-    # X_train_straight = []
-    # y_train_left = []
-    # X_train_left = []
-    # y_train_right = []
-    # X_train_right = []
-    # y_train_accelerate = []
-    # X_train_accelerate = []
-    # # y_train_brake = []
-    # # X_train_brake = []
-    #
-    #
-    # for i in range(len(y_train)):
-    #     if np.array_equiv(y_train[i], [1, 0, 0, 0]):
-    #         y_train_straight.append(y_train[i])
-    #         X_train_straight.append(X_train[i])
-    #     if np.array_equiv(y_train[i], [0, 1, 0, 0]):
-    #         y_train_left.append(y_train[i])
-    #         X_train_left.append(X_train[i])
-    #     if np.array_equiv(y_train[i], [0, 0, 1, 0]):
-    #         y_train_right.append(y_train[i])
-    #         X_train_right.append(X_train[i])
-    #     if np.array_equiv(y_train[i], [0, 0, 0, 1]):
-    #         y_train_accelerate.append(y_train[i])
-    #         X_train_accelerate.append(X_train[i])
-    #     # if np.array_equiv(y_train[i], [0, 0, 0, 0, 1]):
-    #     #     y_train_brake.append(y_train[i])
-    #     #     X_train_brake.append(X_train[i])
-    #
-    # X_train = [X_train_straight, X_train_left, X_train_right, X_train_accelerate]
-    # y_train = [y_train_straight, y_train_left, y_train_right, y_train_accelerate]
+    y_train_straight = []
+    X_train_straight = []
+    y_train_left = []
+    X_train_left = []
+    y_train_right = []
+    X_train_right = []
+    y_train_accelerate = []
+    X_train_accelerate = []
+    # y_train_brake = []
+    # X_train_brake = []
+
+
+    for i in range(len(y_train)):
+        if np.array_equiv(y_train[i], [1, 0, 0, 0]):
+            y_train_straight.append(y_train[i])
+            X_train_straight.append(X_train[i])
+        if np.array_equiv(y_train[i], [0, 1, 0, 0]):
+            y_train_left.append(y_train[i])
+            X_train_left.append(X_train[i])
+        if np.array_equiv(y_train[i], [0, 0, 1, 0]):
+            y_train_right.append(y_train[i])
+            X_train_right.append(X_train[i])
+        if np.array_equiv(y_train[i], [0, 0, 0, 1]):
+            y_train_accelerate.append(y_train[i])
+            X_train_accelerate.append(X_train[i])
+        # if np.array_equiv(y_train[i], [0, 0, 0, 0, 1]):
+        #     y_train_brake.append(y_train[i])
+        #     X_train_brake.append(X_train[i])
+
+    X_train = [X_train_straight, X_train_left, X_train_right, X_train_accelerate]
+    y_train = [y_train_straight, y_train_left, y_train_right, y_train_accelerate]
     # ........
 
 
@@ -172,7 +172,7 @@ def train_model(X_train, y_train, X_valid, y_valid, n_minibatches, batch_size, l
 
     # TODO: specify your agent with the neural network in agents/bc_agent.py
     agent = BCAgent(lr=lr)
-    tensorboard_eval = Evaluation(tensorboard_dir, "train-1", stats=["train_acc", "valid_acc", "loss"])
+    tensorboard_eval = Evaluation(tensorboard_dir, "train-2", stats=["train_acc", "valid_acc", "loss"])
     # TODO: implement the training
     #
     # 1. write a method sample_minibatch and perform an update step
@@ -181,7 +181,7 @@ def train_model(X_train, y_train, X_valid, y_valid, n_minibatches, batch_size, l
     # training loop
     for i in range(n_minibatches):
 
-        X_batch, y_batch = sample_minibatch(X_train, y_train, batch_size)
+        X_batch, y_batch = sample_uniform_minibatch(X_train, y_train, batch_size)
         outputs, y_batch, loss = agent.update(X_batch, y_batch)
 
         if i % 10 == 0:
@@ -210,7 +210,7 @@ def train_model(X_train, y_train, X_valid, y_valid, n_minibatches, batch_size, l
     print("finished")
 
     # TODO: save your agent
-    model_dir = agent.save(os.path.join(model_dir, "agent1.pt"))
+    model_dir = agent.save(os.path.join(model_dir, "agent2.pt"))
     print("Model saved in file: %s" % model_dir)
 
 
