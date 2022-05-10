@@ -172,7 +172,7 @@ def train_model(X_train, y_train, X_valid, y_valid, n_minibatches, batch_size, l
 
     # TODO: specify your agent with the neural network in agents/bc_agent.py
     agent = BCAgent(lr=lr)
-    tensorboard_eval = Evaluation(tensorboard_dir, "train-2", stats=["train_acc", "valid_acc", "loss"])
+    tensorboard_eval = Evaluation(tensorboard_dir, "train-4", stats=["train_acc", "valid_acc", "loss"])
     # TODO: implement the training
     #
     # 1. write a method sample_minibatch and perform an update step
@@ -210,7 +210,7 @@ def train_model(X_train, y_train, X_valid, y_valid, n_minibatches, batch_size, l
     print("finished")
 
     # TODO: save your agent
-    model_dir = agent.save(os.path.join(model_dir, "agent2.pt"))
+    model_dir = agent.save(os.path.join(model_dir, "agent4.pt"))
     print("Model saved in file: %s" % model_dir)
 
 
